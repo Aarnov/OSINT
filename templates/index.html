@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OSINT Recon</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+
+<body>
+
+<div class="app">
+
+    <header class="header">
+        <div>
+            <h1>OSINT<span>Recon</span></h1>
+            <p>Email Digital Footprint Analysis</p>
+        </div>
+        <div class="status">
+            <span class="status-dot"></span>
+            SYSTEM READY
+        </div>
+    </header>
+
+    <main>
+
+        <!-- SEARCH -->
+        <section class="search-panel">
+            <div class="search-title">
+                <h2>New Reconnaissance</h2>
+                <p>
+                    Analyze publicly observable accounts associated
+                    with an authorized email identity.
+                </p>
+            </div>
+            <div class="search-box">
+                <input type="email" id="emailInput" placeholder="Enter email address">
+                <button id="scanButton">Start Scan</button>
+            </div>
+        </section>
+
+        <!-- SUMMARY -->
+        <section class="summary-grid">
+            <div class="stat-card registered">
+                <div class="stat-label">REGISTERED</div>
+                <div class="stat-value" id="registeredCount">—</div>
+                <div class="stat-description">Confirmed accounts</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-label">NOT REGISTERED</div>
+                <div class="stat-value" id="notRegisteredCount">—</div>
+                <div class="stat-description">Negative findings</div>
+            </div>
+
+            <div class="stat-card warning">
+                <div class="stat-label">INCONCLUSIVE</div>
+                <div class="stat-value" id="errorCount">—</div>
+                <div class="stat-description">Status could not be determined</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-label">SKIPPED</div>
+                <div class="stat-value" id="skippedCount">—</div>
+                <div class="stat-description">Not evaluated</div>
+            </div>
+        </section>
+
+        <!-- DASHBOARD -->
+        <section class="dashboard-grid">
+            <div class="panel">
+                <div class="panel-header">
+                    <div>
+                        <h2>Digital Footprint</h2>
+                        <p>Distribution of confirmed accounts by platform category.</p>
+                    </div>
+                </div>
+                <div id="footprintContainer"></div>
+            </div>
+
+            <div class="panel">
+                <div class="panel-header">
+                    <div>
+                        <h2>Recon Overview</h2>
+                        <p>Current scan statistics.</p>
+                    </div>
+                </div>
+                <div class="overview">
+                    <div class="overview-row">
+                        <span>Platforms analyzed</span>
+                        <strong id="totalCount">—</strong>
+                    </div>
+                    <div class="overview-row">
+                        <span>Confirmed footprint</span>
+                        <strong id="registeredPercentage">—</strong>
+                    </div>
+                    <div class="overview-row">
+                        <span>Categories detected</span>
+                        <strong id="categoryCount">—</strong>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- REGISTERED ACCOUNTS -->
+        <section class="panel accounts-panel">
+            <div class="panel-header">
+                <div>
+                    <h2>Confirmed Accounts</h2>
+                    <p>Services reporting the target email as registered.</p>
+                </div>
+                <span class="account-count" id="accountCount">0 accounts</span>
+            </div>
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>PLATFORM</th>
+                            <th>CATEGORY</th>
+                            <th>STATUS</th>
+                            <th>PROFILE</th>
+                        </tr>
+                    </thead>
+                    <tbody id="accountsTable"></tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- ACTIVE INTERACTION SIMULATION -->
+        <section class="panel" id="activeSimulationPanel" style="display: none;">
+            <div class="panel-header">
+                <div>
+                    <h2>Active Interaction Simulation</h2>
+                    <p>Generate a controlled interaction endpoint for an authorized security exercise.</p>
+                </div>
+                <div class="simulation-status">
+                    <div class="simulation-status-dot"></div>
+                    <span id="simulationStatusBadge">NOT ACTIVE</span>
+                </div>
+            </div>
+
+            <div class="simulation-workspace">
+
+                <!-- Column 1: Configuration -->
+                <div class="simulation-column">
+                    <div class="simulation-card">
+                        <div class="simulation-card-header">
+                            <div>
+                                <div class="simulation-card-title">CONFIGURATION</div>
+                                <div class="simulation-card-description">Select a service and simulation type.</div>
+                            </div>
+                        </div>
+
+                        <div class="simulation-field">
+                            <label>CONFIRMED SERVICE</label>
+                            <select id="simulationService" class="simulation-select"></select>
+                        </div>
+
+                        <div class="simulation-field">
+                            <label>SIMULATION TYPE</label>
+                            <select id="simulationType" class="simulation-select">
+                                <option value="account_notification">Account Notification</option>
+                                <option value="security_alert">Security Alert</option>
+                                <option value="profile_update">Profile Update</option>
+                            </select>
+                        </div>
+
+                        <button id="createSimulationButton" class="simulation-primary-button">
+                            Create Simulation
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Column 2: Results & Evidence -->
+                <div class="simulation-column" id="simulationResult" style="display: none;">
+                    <div class="simulation-card">
+                        <div class="simulation-card-header">
+                            <div>
+                                <div class="simulation-card-title">SIMULATION ENDPOINT</div>
+                                <div class="simulation-card-description" id="simulationInteractionStatus">Waiting for interaction</div>
+                            </div>
+                        </div>
+                        <div class="simulation-endpoint">
+                            <div id="simulationUrl" class="simulation-endpoint-url"></div>
+                            <button id="copySimulationButton" class="simulation-copy-button">Copy URL</button>
+                        </div>
+                    </div>
+
+                    <div id="simulationEvidence" class="simulation-card" style="display: none;">
+                        <div class="simulation-card-header">
+                            <div>
+                                <div class="simulation-card-title">INTERACTION EVIDENCE</div>
+                            </div>
+                        </div>
+                        <div class="simulation-evidence-grid" style="margin-bottom: 15px;">
+                            <div class="simulation-evidence-item">
+                                <div class="simulation-evidence-label">IP ADDRESS</div>
+                                <div class="simulation-evidence-value monospace" id="simulationIp">—</div>
+                            </div>
+                            <div class="simulation-evidence-item">
+                                <div class="simulation-evidence-label">TIMESTAMP</div>
+                                <div class="simulation-evidence-value" id="simulationTimestamp">—</div>
+                            </div>
+                        </div>
+                        <div class="simulation-email-detail" style="border-top: none; padding: 0;">
+                            <span>User-Agent</span>
+                            <strong id="simulationUserAgent" style="text-align: right; word-break: break-word; max-width: 75%;">—</strong>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- INCONCLUSIVE RESULTS -->
+        <section class="panel inconclusive-panel">
+            <div class="panel-header">
+                <div>
+                    <h2>Inconclusive Results</h2>
+                    <p>Services where account status could not be reliably determined.</p>
+                </div>
+                <span class="account-count" id="inconclusiveCount">0 results</span>
+            </div>
+            <div id="errorStatistics" class="error-statistics"></div>
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>PLATFORM</th>
+                            <th>CATEGORY</th>
+                            <th>REASON</th>
+                            <th>RETRY</th>
+                        </tr>
+                    </thead>
+                    <tbody id="inconclusiveTable"></tbody>
+                </table>
+            </div>
+        </section>
+
+    </main>
+
+    <footer>
+        <span>OSINT Reconnaissance Platform</span>
+        <span>Public-source analysis • Authorized use only</span>
+    </footer>
+
+</div>
+
+<script src="{{ url_for('static', filename='js/app.js') }}"></script>
+
+</body>
+</html>
